@@ -26,7 +26,30 @@ RUN echo "jenkins ALL=NOPASSWD: ALL" >> /etc/sudoers
 # nodejs
 #
 RUN mkdir /nodejs
-RUN curl -O http://nodejs.org/dist/v7.10.0/node-v7.10.0-linux-x64.tar.gz
-RUN tar xvzf node-v7.10.0-linux-x64.tar.gz -C /nodejs --strip-components=1
+RUN curl -O https://nodejs.org/dist/v8.11.1/node-v8.11.1-linux-x64.tar.xz
+RUN tar xvzf node-v8.11.1-linux-x64.tar.xz -C /nodejs --strip-components=1
 ENV PATH $PATH:/nodejs/bin
 RUN npm install -g cnpm --registry=https://registry.npm.taobao.org
+#
+# maven
+#
+# Install Jenkins Plugins
+COPY resources/plugins.txt /usr/share/jenkins/plugins.txt
+RUN /usr/local/bin/plugins.sh /usr/share/jenkins/plugins.txt
+# Configure Maven installation location in Jenkins
+COPY resources/hudson.tasks.Maven.xml /var/jenkins_home/hudson.tasks.Maven.xml
+# Copy Docker config
+COPY resources/org.jenkinsci.plugins.docker.commons.tools.DockerTool.xml /var/jenkins_home/org.jenkinsci.plugins.docker.commons.tools.DockerTool.xml
+# Install maven
+USER root
+RUN apt-get update && apt-get install -y wget
+# get maven 3.5.3
+RUN wget --no-verbose -O /tmp/apache-maven-3.5.3.tar.gz http://archive.apache.org/dist/maven/maven-3/3.5.3/binaries/apache-maven-3.5.3-bin.tar.gz
+# install maven
+RUN tar xzf /tmp/apache-maven-3.5.3.tar.gz -C /opt/
+RUN ln -s /opt/apache-maven-3.5.3 /opt/maven
+RUN ln -s /opt/maven/bin/mvn /usr/local/bin
+RUN rm -f /tmp/apache-maven-3.5.3.tar.gz
+ENV MAVEN_HOME /opt/maven
+# Switch back to Jenkins user
+USER jenkins
