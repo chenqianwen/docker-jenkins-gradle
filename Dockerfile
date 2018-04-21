@@ -33,13 +33,6 @@ RUN npm install -g cnpm --registry=https://registry.npm.taobao.org
 #
 # maven
 #
-# Install Jenkins Plugins
-COPY resources/plugins.txt /usr/share/jenkins/plugins.txt
-RUN /usr/local/bin/plugins.sh /usr/share/jenkins/plugins.txt
-# Configure Maven installation location in Jenkins
-COPY resources/hudson.tasks.Maven.xml /var/jenkins_home/hudson.tasks.Maven.xml
-# Copy Docker config
-COPY resources/org.jenkinsci.plugins.docker.commons.tools.DockerTool.xml /var/jenkins_home/org.jenkinsci.plugins.docker.commons.tools.DockerTool.xml
 # Install maven
 USER root
 RUN apt-get update && apt-get install -y wget
