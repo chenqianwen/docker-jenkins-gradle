@@ -4,7 +4,7 @@ ENV SDKMAN_DIR /usr/share/sdkman/dir
 
 USER root
 ADD jenkins-gradle.sh /usr/local/bin/
-ENTRYPOINT ["/sbin/tini", "--", "jenkins-gradle.sh"]
+ENTRYPOINT ["sh", "/usr/local/bin/jenkins-gradle.sh"]
 RUN apt-get update && apt-get install -y zip && rm -rf /var/lib/apt/lists/* \
     && mkdir -p "$(dirname "$SDKMAN_DIR")" \
     && chown -R jenkins: "$(dirname "$SDKMAN_DIR")"
@@ -26,8 +26,8 @@ RUN echo "jenkins ALL=NOPASSWD: ALL" >> /etc/sudoers
 # nodejs
 #
 RUN mkdir /nodejs
-RUN curl -O https://nodejs.org/dist/v8.11.1/node-v8.11.1-linux-x64.tar.xz
-RUN tar xvzf node-v8.11.1-linux-x64.tar.xz -C /nodejs --strip-components=1
+RUN curl -O https://nodejs.org/dist/v8.11.1/node-v8.11.1-linux-x64.tar.gz
+RUN tar xvzf node-v8.11.1-linux-x64.tar.gz -C /nodejs --strip-components=1
 ENV PATH $PATH:/nodejs/bin
 RUN npm install -g cnpm --registry=https://registry.npm.taobao.org
 #
